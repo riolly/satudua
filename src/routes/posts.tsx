@@ -8,7 +8,6 @@ export const Route = createFileRoute('/posts')({
   loader: async ({ context }) => {
     await context.queryClient.ensureQueryData({
       ...convexQuery(api.posts.list, {}),
-      gcTime: 10000,
     })
   },
   component: PostsComponent,
