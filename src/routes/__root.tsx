@@ -1,12 +1,4 @@
 import {
-  HeadContent,
-  Link,
-  Outlet,
-  Scripts,
-  createRootRouteWithContext,
-  useRouteContext,
-} from '@tanstack/react-router'
-import {
   ClerkProvider,
   SignInButton,
   SignedIn,
@@ -14,13 +6,38 @@ import {
   UserButton,
   useAuth,
 } from '@clerk/tanstack-react-start'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import * as React from 'react'
-import { ConvexProviderWithClerk } from 'convex/react-clerk'
+import { dark } from '@clerk/themes'
 import type { ConvexQueryClient } from '@convex-dev/react-query'
-import type { ConvexReactClient } from 'convex/react'
 import type { QueryClient } from '@tanstack/react-query'
+import {
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+  useRouteContext,
+} from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import type { ConvexReactClient } from 'convex/react'
+import { ConvexProviderWithClerk } from 'convex/react-clerk'
+import * as React from 'react'
+import { ModeToggle } from '~/components/ui/mode-toggle'
+import { ThemeProvider, useTheme } from '~/components/ui/theme-provider'
 import appCss from '~/styles/app.css?url'
+
+// Inline script to prevent flash of incorrect theme
+const themeScript = `
+  (function() {
+    try {
+      var stored = localStorage.getItem('vite-ui-theme');
+      var theme = stored === 'light' || stored === 'dark' ? stored : null;
+      if (!theme) {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.classList.add(theme);
+    } catch (e) {}
+  })();
+`
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -70,11 +87,35 @@ function RootComponent() {
   const context = useRouteContext({ from: Route.id })
 
   return (
-    <ClerkProvider>
-      <ConvexProviderWithClerk client={context.convexClient} useAuth={useAuth}>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <ThemedClerkProvider convexClient={context.convexClient}>
         <RootDocument>
           <Outlet />
         </RootDocument>
+      </ThemedClerkProvider>
+    </ThemeProvider>
+  )
+}
+
+function ThemedClerkProvider({
+  children,
+  convexClient,
+}: {
+  children: React.ReactNode
+  convexClient: ConvexReactClient
+}) {
+  const { theme } = useTheme()
+
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' &&
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches)
+
+  return (
+    <ClerkProvider appearance={isDark ? { baseTheme: dark } : undefined}>
+      <ConvexProviderWithClerk client={convexClient} useAuth={useAuth}>
+        {children}
       </ConvexProviderWithClerk>
     </ClerkProvider>
   )
@@ -82,8 +123,9 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />
       </head>
       <body>
@@ -113,7 +155,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           >
             User
           </Link>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <ModeToggle />
             <SignedIn>
               <UserButton />
             </SignedIn>

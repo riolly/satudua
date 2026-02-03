@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx convex dev --once && concurrently -r npm:dev:web npm:dev:convex",
-    "dev:web": "vite dev",
+    "dev:web": "vite dev --port 3001",
     "dev:convex": "npx convex dev",
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@base-ui/react": "^1.1.0",
     "@clerk/tanstack-react-start": "^0.28.1",
+    "@clerk/themes": "^2.4.51",
     "@convex-dev/react-query": "0.1.0",
     "@fontsource-variable/outfit": "^5.2.8",
     "@hugeicons/core-free-icons": "^3.1.1",
