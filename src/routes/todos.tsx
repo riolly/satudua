@@ -71,7 +71,7 @@ function TodosComponent() {
     <div className="p-4 max-w-2xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Todo List (Convex CRUD Demo)</CardTitle>
+          <CardTitle>Todo List</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Add Todo Form */}

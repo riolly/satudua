@@ -10,7 +10,12 @@
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",
     "format": "prettier --write .",
-    "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "tsc && eslint .  --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
@@ -38,6 +43,8 @@
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.1.1",
+    "@edge-runtime/vm": "^5.0.0",
+    "@playwright/test": "^1.58.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/eslint-config": "^0.3.4",
     "@types/node": "^25.0.9",
@@ -46,11 +53,13 @@
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.23",
     "concurrently": "~9.2.1",
+    "convex-test": "^0.0.41",
     "prettier": "^3.8.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vite-tsconfig-paths": "^6.0.4"
+    "vite-tsconfig-paths": "^6.0.4",
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

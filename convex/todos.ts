@@ -116,3 +116,20 @@ export const remove = mutation({
     await ctx.db.delete(args.id)
   },
 })
+
+/**
+ * CLEAR ALL TODOS (for testing)
+ *
+ * A `mutation` that deletes all todos from the database.
+ * Useful for cleaning up after E2E tests.
+ */
+export const clearAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const todos = await ctx.db.query('todos').collect()
+    for (const todo of todos) {
+      await ctx.db.delete(todo._id)
+    }
+    return { deleted: todos.length }
+  },
+})
